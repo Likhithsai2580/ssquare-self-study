@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-8">Your Dashboard</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4">Exam History</h2>
+            {% if user_exams %}
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Exam</th>
+                            <th class="text-left">Date</th>
+                            <th class="text-left">Score</th>
+                            <th class="text-left">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for user_exam in user_exams %}
+                        <tr>
+                            <td>{{ user_exam.exam.subject }}</td>
+                            <td>{{ user_exam.completed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ user_exam.score|round(2) }}%</td>
+                            <td><a href="{{ url_for('main.exam_result', exam_id=user_exam.exam_id) }}" class="text-blue-600 hover:underline">View Result</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You haven't taken any exams yet.</p>
+            {% endif %}
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4">Exam Statistics</h2>
+            <p>Total Exams: {{ exam_stats.total_exams }}</p>
+            <h3 class="text-xl font-semibold mt-4 mb-2">Exams by Subject:</h3>
+            <ul>
+                {% for subject, count in exam_stats.exams_by_subject.items() %}
+                <li>{{ subject }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="mt-8">
+        <a href="{{ url_for('main.performance_analysis') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">View Performance Analysis</a>
+    </div>
+{% endblock %}

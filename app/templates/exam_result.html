@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Exam Result: {{ exam.subject }}</h1>
+    <p>Date: {{ user_exam.completed_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p>Score: {{ user_exam.score|round(2) }}%</p>
+    
+    <h2>Performance Graph</h2>
+    <img src="data:image/png;base64,{{ graph_url }}" alt="Exam Performance Graph">
+    
+    <h2>Question Analysis</h2>
+    {% for i, question in enumerate(exam.questions) %}
+        <div class="question">
+            <h3>Question {{ i + 1 }}</h3>
+            <p>{{ question.question }}</p>
+            <p>Your Answer: {{ question.options[user_exam.answers[i|string]] }}</p>
+            <p>Correct Answer: {{ question.options[question.correct_answer] }}</p>
+            <p>Result: {% if user_exam.answers[i|string] == question.correct_answer %}Correct{% else %}Incorrect{% endif %}</p>
+        </div>
+    {% endfor %}
+    
+    <a href="{{ url_for('main.dashboard') }}">Back to Dashboard</a>
+{% endblock %}

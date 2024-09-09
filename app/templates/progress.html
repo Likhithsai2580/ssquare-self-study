@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Your Progress</h1>
+    {% if progress %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Total Questions</th>
+                    <th>Correct Answers</th>
+                    <th>Accuracy</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in progress %}
+                <tr>
+                    <td>{{ p.subject }}</td>
+                    <td>{{ p.total_questions }}</td>
+                    <td>{{ p.correct_answers }}</td>
+                    <td>{{ (p.correct_answers / p.total_questions * 100)|round(2) }}%</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No progress data available yet. Take some exams to see your progress!</p>
+    {% endif %}
+{% endblock %}

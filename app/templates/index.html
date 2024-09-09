@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Welcome to SSquare Self Study</h1>
+    {% if current_user.is_authenticated %}
+    <p>Hello, {{ current_user.username }}!</p>
+    {% else %}
+    <p>Please log in or register to start studying.</p>
+    {% endif %}
+{% endblock %}

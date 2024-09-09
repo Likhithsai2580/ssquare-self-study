@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold mb-8">{{ subject }} Learning Path</h1>
+    
+    <h2 class="text-2xl font-semibold mb-4">Recommended Study Order</h2>
+    <ol class="list-decimal pl-5 mb-8">
+        {% for topic in path.recommended_order %}
+            <li class="mb-2">
+                {{ topic }}
+                {% if topic in path.weak_topics %}
+                    <span class="text-red-500 ml-2">(Needs improvement)</span>
+                {% else %}
+                    <span class="text-green-500 ml-2">(Strong topic)</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+    
+    <h2 class="text-2xl font-semibold mb-4">Weak Topics</h2>
+    <ul class="list-disc pl-5 mb-8">
+        {% for topic in path.weak_topics %}
+            <li>{{ topic }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h2 class="text-2xl font-semibold mb-4">Strong Topics</h2>
+    <ul class="list-disc pl-5 mb-8">
+        {% for topic in path.strong_topics %}
+            <li>{{ topic }}</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{{ url_for('main.dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Back to Dashboard</a>
+{% endblock %}

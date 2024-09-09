@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Predicted Questions for {{ exam_type }} - {{ subject }}</h1>
+    {% if predictions %}
+        {% for prediction in predictions %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Question {{ loop.index }}</h5>
+                    <p class="card-text">{{ prediction.question }}</p>
+                    <ol type="a">
+                        {% for option in prediction.options %}
+                            <li>{{ option }}</li>
+                        {% endfor %}
+                    </ol>
+                    <p><strong>Correct Answer:</strong> Option {{ chr(97 + prediction.correct_answer) }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No predictions available. Try generating new predictions.</p>
+    {% endif %}
+    <a href="{{ url_for('main.predict_questions_route') }}" class="btn btn-primary">Predict New Questions</a>
+{% endblock %}

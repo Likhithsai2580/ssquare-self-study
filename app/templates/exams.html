@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Upcoming Exams</h1>
+    {% if exams %}
+        <ul>
+        {% for exam in exams %}
+            <li>
+                {{ exam.subject }} Exam
+                <br>Start: {{ exam.start_time.strftime('%Y-%m-%d %H:%M') }}
+                <br>End: {{ exam.end_time.strftime('%Y-%m-%d %H:%M') }}
+                <br>
+                {% if exam.start_time <= now and exam.end_time >= now %}
+                    <a href="{{ url_for('main.take_exam', exam_id=exam.id) }}">Take Exam</a>
+                {% elif exam.start_time > now %}
+                    Exam not started yet
+                {% else %}
+                    Exam ended
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming exams scheduled.</p>
+    {% endif %}
+{% endblock %}
