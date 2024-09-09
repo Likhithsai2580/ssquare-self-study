@@ -140,7 +140,6 @@ ssquare-self-study/
 ├── config.py
 ├── requirements.txt
 ├── run.py
-└── setup_ml_models.py
 ```
 
 ## Development
