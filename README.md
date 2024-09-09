@@ -70,11 +70,6 @@ SSquare Self Study is a comprehensive web application designed to help students 
    python run.py
    ```
 
-7. Set up the machine learning models:
-   ```
-   python setup_ml_models.py
-   ```
-
 ## Usage
 
 1. Register a new account or log in to an existing one.
