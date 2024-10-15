@@ -1,26 +1,27 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_migrate import Migrate
-from config import Config
-from flask_sse import sse
+from flask_socketio import SocketIO
+from flask_analytics import Analytics
+from app.firebase_auth import initialize_firebase
 
-db = SQLAlchemy()
-migrate = Migrate()
-login_manager = LoginManager()
+socketio = SocketIO()
+analytics = Analytics()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
-
+    app.config.from_object('config.Config')
+    
+    from app.models import db
     db.init_app(app)
-    migrate.init_app(app, db)
-    login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-
-    from app.routes import main, auth
+    
+    from app.routes import main, auth_bp, exam_bp
     app.register_blueprint(main)
-    app.register_blueprint(auth)
-    app.register_blueprint(sse, url_prefix='/stream')
-
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(exam_bp)
+    
+    socketio.init_app(app)
+    analytics.init_app(app)
+    
+    with app.app_context():
+        initialize_firebase()
+    
     return app

@@ -1,13 +1,15 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
-from app import db, cache
+from app import db, cache, limiter
 from app.models import Exam, UserExam
 from datetime import datetime
+from app.utils import calculate_score, award_points
 
 exam_bp = Blueprint('exam', __name__)
 
 @exam_bp.route('/exams')
 @login_required
+@cache.cached(timeout=300)
 def exams():
     active_exams = Exam.query.filter(Exam.is_active == True).all()
     return render_template('exams.html', exams=active_exams)
@@ -34,6 +36,7 @@ def take_exam(exam_id):
 
 @exam_bp.route('/submit_exam/<int:exam_id>', methods=['POST'])
 @login_required
+@limiter.limit("1 per minute")
 def submit_exam(exam_id):
     exam = Exam.query.get_or_404(exam_id)
     user_exam = UserExam.query.filter_by(user_id=current_user.id, exam_id=exam_id).first_or_404()
@@ -53,9 +56,16 @@ def submit_exam(exam_id):
     
     db.session.commit()
     
+    # Award points based on the score
+    points_awarded = award_points(current_user, score)
+    
     cache.delete(f'user_{current_user.id}_exam_{exam_id}_result')
     
-    return jsonify({'message': 'Exam submitted successfully', 'score': score}), 200
+    return jsonify({
+        'message': 'Exam submitted successfully',
+        'score': score,
+        'points_awarded': points_awarded
+    }), 200
 
 @exam_bp.route('/exam_result/<int:exam_id>')
 @login_required
@@ -65,9 +75,3 @@ def exam_result(exam_id):
     exam = user_exam.exam
     
     return render_template('exam_result.html', user_exam=user_exam, exam=exam)
-
-def calculate_score(questions, answers):
-    correct_answers = sum(1 for q, a in zip(questions, answers.values()) if q['correct_answer'] == a)
-    return (correct_answers / len(questions)) * 100
-
-# ... (other routes)
