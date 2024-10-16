@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import json
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 class Perplexica:
     def __init__(self):
@@ -53,6 +56,38 @@ class Perplexica:
             "correct_answer": correct_answer
         }
 
+    def generate_question_ml(self, subject, topic):
+        search_query = f"{subject} {topic} exam question"
+        search_results = self.search(search_query)
+        
+        if not search_results:
+            return None
+
+        # Use TF-IDF and cosine similarity to create a question
+        vectorizer = TfidfVectorizer()
+        documents = [result['title'] for result in search_results]
+        tfidf_matrix = vectorizer.fit_transform(documents)
+        query_vector = vectorizer.transform([search_query])
+        similarities = cosine_similarity(query_vector, tfidf_matrix).flatten()
+        
+        best_match_index = np.argmax(similarities)
+        best_match = search_results[best_match_index]
+        
+        question = f"Based on the topic '{topic}' in {subject}, {best_match['title']}"
+        options = [
+            f"Option related to {best_match['title']}",
+            f"Another option about {topic}",
+            f"Third option regarding {subject}",
+            f"Fourth option on {topic} in {subject}"
+        ]
+        correct_answer = random.randint(0, 3)
+
+        return {
+            "question": question,
+            "options": options,
+            "correct_answer": correct_answer
+        }
+
 perplexica = Perplexica()
 
 def generate_questions(subject, num_questions=10):
@@ -65,7 +100,7 @@ def generate_questions(subject, num_questions=10):
     questions = []
     for _ in range(num_questions):
         topic = random.choice(topics)
-        question = perplexica.generate_question(subject, topic)
+        question = perplexica.generate_question_ml(subject, topic)
         if question:
             questions.append(question)
     

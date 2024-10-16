@@ -25,6 +25,17 @@ def check_and_award_badges(user):
         user.badges.append(badge)
         create_notification(user, f"You've earned the '{badge.name}' badge!")
     
+    # Additional badge criteria
+    if user.points >= 5000 and not user.badges.filter_by(name='Superstar').first():
+        badge = Badge.query.filter_by(name='Superstar').first()
+        user.badges.append(badge)
+        create_notification(user, f"You've earned the '{badge.name}' badge!")
+    
+    if len(user.user_exams) >= 10 and not user.badges.filter_by(name='Exam Pro').first():
+        badge = Badge.query.filter_by(name='Exam Pro').first()
+        user.badges.append(badge)
+        create_notification(user, f"You've earned the '{badge.name}' badge!")
+    
     db.session.commit()
 
 def create_notification(user, message):
@@ -59,3 +70,35 @@ def generate_learning_path(user_id, subject):
         'weak_topics': weak_topics,
         'strong_topics': strong_topics
     }
+
+def analyze_performance(user_id):
+    user_exams = UserExam.query.filter_by(user_id=user_id).all()
+    
+    performance_data = {
+        'total_exams': len(user_exams),
+        'average_score': sum(exam.score for exam in user_exams) / len(user_exams) if user_exams else 0,
+        'best_score': max(exam.score for exam in user_exams) if user_exams else 0,
+        'worst_score': min(exam.score for exam in user_exams) if user_exams else 0,
+        'improvement': 0,
+        'improvement_percentage': 0
+    }
+    
+    if user_exams:
+        first_exam_score = user_exams[0].score
+        last_exam_score = user_exams[-1].score
+        performance_data['improvement'] = last_exam_score - first_exam_score
+        performance_data['improvement_percentage'] = (performance_data['improvement'] / first_exam_score) * 100 if first_exam_score else 0
+    
+    return performance_data
+
+def generate_detailed_learning_path(user_id, subject):
+    learning_path = generate_learning_path(user_id, subject)
+    
+    # Add more detailed insights
+    learning_path['detailed_insights'] = {
+        'total_exams': len(learning_path['recommended_order']),
+        'weak_topics_count': len(learning_path['weak_topics']),
+        'strong_topics_count': len(learning_path['strong_topics'])
+    }
+    
+    return learning_path

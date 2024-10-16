@@ -34,4 +34,43 @@ def track_exam_complete(exam_id, score):
         }
     )
 
-# Add more tracking functions as needed
+@analytics.track
+def track_study_material_view(material_id):
+    analytics.track_event(
+        'study_material_view',
+        {
+            'material_id': material_id,
+            'user_id': current_user.id,
+        }
+    )
+
+@analytics.track
+def track_question_attempt(question_id, is_correct):
+    analytics.track_event(
+        'question_attempt',
+        {
+            'question_id': question_id,
+            'user_id': current_user.id,
+            'is_correct': is_correct,
+        }
+    )
+
+@analytics.track
+def track_badge_earned(badge_id):
+    analytics.track_event(
+        'badge_earned',
+        {
+            'badge_id': badge_id,
+            'user_id': current_user.id,
+        }
+    )
+
+@analytics.track
+def track_learning_path_generated(path_id):
+    analytics.track_event(
+        'learning_path_generated',
+        {
+            'path_id': path_id,
+            'user_id': current_user.id,
+        }
+    )
