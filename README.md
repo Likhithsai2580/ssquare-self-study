@@ -16,6 +16,14 @@ SSquare Self Study is a comprehensive web application designed to help students 
 - Question prediction
 - AI-powered study recommendations
 - Personalized learning paths
+- Enhanced question predictor algorithm using advanced machine learning techniques
+- Personalized and context-aware AI counselor
+- Improved user interface and user experience
+- Detailed user interaction tracking
+- Timely and relevant exam scheduling and notifications
+- Accurate and personalized study material recommendations
+- Enhanced gamification features with more badges and points criteria
+- Detailed insights and personalized learning paths
 
 ## Technologies Used
 

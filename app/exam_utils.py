@@ -79,3 +79,25 @@ def get_exam_statistics():
         'total_exams': total_exams,
         'exams_by_subject': dict(exams_by_subject)
     }
+
+def notify_users_about_upcoming_exams():
+    upcoming_exams = Exam.query.filter(Exam.start_time > datetime.now()).all()
+    for exam in upcoming_exams:
+        time_until_exam = exam.start_time - datetime.now()
+        if time_until_exam <= timedelta(hours=24):
+            users = User.query.all()
+            for user in users:
+                notification = Notification(
+                    user_id=user.id,
+                    message=f"Reminder: {exam.subject} exam is scheduled for {exam.start_time.strftime('%Y-%m-%d %H:%M')}",
+                    read=False
+                )
+                db.session.add(notification)
+            db.session.commit()
+
+def schedule_notifications():
+    schedule.every().day.at("00:01").do(notify_users_about_upcoming_exams)
+    
+    while True:
+        schedule.run_pending()
+        time.sleep(60)

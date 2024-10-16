@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Web Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('main.exams') }}">Exams</a></li>
+                <li><a href="{{ url_for('main.study_materials') }}">Study Materials</a></li>
+                <li><a href="{{ url_for('main.chatbot') }}">AI Chatbot</a></li>
+                <li><a href="{{ url_for('main.performance_analysis') }}">Performance Analysis</a></li>
+                <li><a href="{{ url_for('main.leaderboard') }}">Leaderboard</a></li>
+                <li><a href="{{ url_for('main.notifications') }}">Notifications</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2023 Enhanced Web Application. All rights reserved.</p>
+    </footer>
+</body>
+</html>
