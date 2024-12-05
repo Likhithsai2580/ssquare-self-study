@@ -2,10 +2,12 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from app.models import User, Exam, UserExam
 from app import db, limiter
+from datetime import datetime
+from app.utils import calculate_score
 
-api_bp = Blueprint('api', __name__)
+api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
-@api_bp.route('/login', methods=['POST'])
+@api_bp.route('/auth/login', methods=['POST'])
 @limiter.limit("5 per minute")
 def login():
     if not request.is_json:
@@ -23,15 +25,15 @@ def login():
     else:
         return jsonify({"msg": "Bad username or password"}), 401
 
-@api_bp.route('/protected', methods=['GET'])
-@jwt_required
-def protected():
+@api_bp.route('/auth/verify', methods=['GET'])
+@jwt_required()
+def verify_token():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-@api_bp.route('/exams', methods=['GET'])
-@jwt_required
-def get_exams():
+@api_bp.route('/exams/list', methods=['GET'])
+@jwt_required()
+def list_exams():
     exams = Exam.query.filter(Exam.is_active == True).all()
     return jsonify([{
         'id': exam.id,
@@ -41,8 +43,8 @@ def get_exams():
         'end_time': exam.end_time.isoformat()
     } for exam in exams]), 200
 
-@api_bp.route('/submit_exam/<int:exam_id>', methods=['POST'])
-@jwt_required
+@api_bp.route('/exams/<int:exam_id>/submit', methods=['POST'])
+@jwt_required()
 @limiter.limit("1 per minute")
 def submit_exam(exam_id):
     current_user = get_jwt_identity()
